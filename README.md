@@ -1,14 +1,14 @@
-# AI OS 3 — Scraping Agents
+# Scraping-Agent-AI
 
 **By Sourav Kumar**
 
-[![Repository](https://img.shields.io/badge/GitHub-AI--OS--3--scrapping--agents-blue)](https://github.com/vivekmishraishere/AI-OS-3-scrapping-agents)
+[![Repository](https://img.shields.io/badge/GitHub-Scraping--Agent--AI-blue)](https://github.com/sourav842741/Scraping-Agents)
 
 A collection of browser-based data extraction tools with live dashboards — built for research, lead generation, and workflow automation. Each app runs independently with its own API, UI, and SQLite history.
 
 > Public learning and productivity workspace. Use responsibly and in line with each platform's terms of service.
 
-**Repository:** [github.com/vivekmishraishere/AI-OS-3-scrapping-agents](https://github.com/vivekmishraishere/AI-OS-3-scrapping-agents)
+**Repository:** [github.com/vivekmishraishere/AI-OS-3-scrapping-agents](https://github.com/sourav842741/Scraping-Agents)
 
 ---
 
