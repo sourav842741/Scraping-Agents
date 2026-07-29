@@ -8,7 +8,7 @@ A collection of browser-based data extraction tools with live dashboards — bui
 
 > Public learning and productivity workspace. Use responsibly and in line with each platform's terms of service.
 
-**Repository:** [github.com/vivekmishraishere/AI-OS-3-scrapping-agents](https://github.com/sourav842741/Scraping-Agents)
+**Repository:** [https://github.com/sourav842741/Scraping-Agents](https://github.com/sourav842741/Scraping-Agents)
 
 ---
 
