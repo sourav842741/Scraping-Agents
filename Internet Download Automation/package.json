@@ -1,0 +1,20 @@
+{
+  "name": "internet-download-dashboard",
+  "version": "1.0.0",
+  "description": "Search and download images from the web with headless browser automation",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test:proxy": "node scripts/test-proxy.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+
+    "express": "^4.21.2",
+    "puppeteer": "^24.2.0",
+    "uuid": "^11.1.0"
+  }
+}

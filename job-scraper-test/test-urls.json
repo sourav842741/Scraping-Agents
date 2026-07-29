@@ -1,0 +1,11 @@
+{
+  "_comment": "Paste real URLs from your browser. Search pages test listing scrape; jobUrls test single postings.",
+  "linkedin": {
+    "searchUrl": "https://www.linkedin.com/jobs/search?keywords=software%20engineer&location=United%20States",
+    "jobUrls": []
+  },
+  "indeed": {
+    "searchUrl": "https://www.indeed.com/jobs?q=software+engineer&l=remote",
+    "jobUrls": []
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+output/*
+!output/.gitkeep
+data/*.sqlite
+data/*.sqlite-*
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+dashboard/dist/

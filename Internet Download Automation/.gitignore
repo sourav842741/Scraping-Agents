@@ -1,0 +1,14 @@
+node_modules/
+storage/downloads/*
+!storage/downloads/.gitkeep
+storage/*.db
+storage/*.db-*
+data/*.sqlite
+data/*.sqlite-*
+output/*
+!output/.gitkeep
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

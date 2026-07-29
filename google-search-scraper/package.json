@@ -1,0 +1,32 @@
+{
+  "name": "google-search-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Google search extraction with table dashboard, proxy, history, and CSV export",
+  "type": "module",
+  "scripts": {
+    "server": "node server/index.js",
+    "dashboard:dev": "vite --config dashboard/vite.config.js",
+    "dev": "concurrently -k -n api,ui -c cyan,magenta \"npm run server\" \"npm run dashboard:dev\"",
+    "build:dashboard": "vite build --config dashboard/vite.config.js",
+    "start": "npm run build:dashboard && node server/index.js",
+    "maps": "node scripts/run-google-maps-cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "puppeteer": "^24.2.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "vite": "^6.0.3"
+  }
+}

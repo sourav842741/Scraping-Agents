@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Maps Scraper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">📍</div>
+          <div>
+            <h1>Google Maps Scraper</h1>
+            <p class="subtitle">
+              Business search · Proxy rotation · Unlimited scroll · SQLite history
+            </p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" id="historyBtn" class="header-btn" title="Past scrapes">
+            <svg class="header-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 2"/>
+            </svg>
+            History
+          </button>
+          <div class="route-toggle" id="routeToggle" title="Local IP vs NodeMaven rotating proxy">
+            <button type="button" class="route-btn" data-mode="local">Local</button>
+            <button type="button" class="route-btn active" data-mode="proxy" id="proxyRouteBtn">Proxy</button>
+          </div>
+          <span id="parallelStatus" class="parallel-pill hidden" title="Parallel scrape slots">0 of 5 running</span>
+          <span id="serverStatus" class="status-pill">Checking server…</span>
+        </div>
+      </header>
+
+      <div class="grid">
+        <aside>
+          <div class="card sidebar-card">
+            <div class="sidebar-fixed">
+              <h2>New search</h2>
+              <label for="query">Business search</label>
+              <input
+                type="text"
+                id="query"
+                form="searchForm"
+                placeholder="e.g. digital marketing agency"
+                autocomplete="off"
+                required
+              />
+            </div>
+            <div class="sidebar-scroll">
+              <form id="searchForm">
+                <label for="location">Location</label>
+                <input
+                  type="text"
+                  id="location"
+                  placeholder="e.g. India (separate from search terms)"
+                  autocomplete="off"
+                />
+
+                <div class="form-divider"></div>
+
+                <div class="mode-section">
+                  <label>Report mode</label>
+                  <div class="route-toggle download-mode-toggle" id="reportModeToggle" title="Fast scrolls the list; Detail opens each business page">
+                    <button type="button" class="route-btn active" data-mode="fast">Fast</button>
+                    <button type="button" class="route-btn" data-mode="detail">Detail</button>
+                  </div>
+                  <p class="platform-hint" id="reportModeHint">
+                    Fast — name, rating, address from list. Skips website &amp; email; phone only if shown in list.
+                  </p>
+                </div>
+
+                <div class="mode-section">
+                  <label class="toggle-row" title="Scroll until list ends; rotate proxy on reject">
+                    <span>Unlimited mode</span>
+                    <input type="checkbox" id="unlimitedMode" checked />
+                    <span class="toggle-track" aria-hidden="true"></span>
+                  </label>
+                  <p class="platform-hint" id="unlimitedHint">
+                    On — scrape until the feed ends. Rotates proxy when Google soft-caps or rejects.
+                  </p>
+                </div>
+
+                <div id="maxResultsSection" class="slider-row hidden">
+                  <div class="slider-header">
+                    <label for="maxResults">Max businesses</label>
+                    <span id="maxResultsLabel" class="count-badge">100</span>
+                  </div>
+                  <input type="range" id="maxResults" min="10" max="500" value="100" step="10" />
+                  <div class="preset-btns">
+                    <button type="button" data-max="50">50</button>
+                    <button type="button" data-max="100" class="active">100</button>
+                    <button type="button" data-max="200">200</button>
+                    <button type="button" data-max="500">500</button>
+                  </div>
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <label for="maxRotations">Max proxy rotations</label>
+                    <span id="maxRotationsLabel" class="count-badge">15</span>
+                  </div>
+                  <input type="range" id="maxRotations" min="1" max="30" value="15" step="1" />
+                  <p class="platform-hint">On reject or soft-cap, switch to a new proxy IP (up to this limit).</p>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                  Start Maps scrape
+                </button>
+              </form>
+            </div>
+          </div>
+        </aside>
+
+        <main class="card card-main">
+          <div id="welcomeView" class="empty">
+            <div class="empty-icon">🗺️</div>
+            <p style="max-width: 440px; margin: 0 auto; line-height: 1.6">
+              Search Google Maps for businesses, scroll through results, and export CSV — with live proxy rotation when IPs get capped.
+            </p>
+            <div class="welcome-features">
+              <span class="welcome-chip">Unlimited scroll</span>
+              <span class="welcome-chip">Proxy rotation</span>
+              <span class="welcome-chip">Reject detection</span>
+              <span class="welcome-chip">CSV export</span>
+            </div>
+          </div>
+
+          <div id="jobView" class="hidden">
+            <div class="job-header">
+              <div class="job-header-row">
+                <div>
+                  <h3 id="jobTitle">—</h3>
+                  <p id="jobMeta">—</p>
+                </div>
+                <div class="job-header-actions">
+                  <a id="exportBtn" class="header-btn hidden" href="#" download>Export CSV</a>
+                  <button type="button" id="stopBtn" class="btn-stop hidden">Stop task</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="failureBanner" class="failure-banner hidden"></div>
+            <div id="rejectBanner" class="reject-banner hidden"></div>
+            <div id="reportModeBanner" class="report-mode-banner hidden"></div>
+
+            <div class="stats-row">
+              <div class="stat">
+                <div class="val" id="statCollected">0</div>
+                <div class="lbl">Collected</div>
+              </div>
+              <div class="stat">
+                <div class="val" id="statScrolls">0</div>
+                <div class="lbl">Scroll rounds</div>
+              </div>
+              <div class="stat stat-stat-success">
+                <div class="val" id="statRotations">0</div>
+                <div class="lbl">Rotations</div>
+              </div>
+              <div class="stat stat-stat-failed">
+                <div class="val" id="statRejects">0</div>
+                <div class="lbl">Rejects</div>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="results">Results</button>
+              <button class="tab" data-tab="logs">Activity log</button>
+            </div>
+
+            <div id="tabResults">
+              <div class="results-toolbar filters-row">
+                <input type="text" id="tableFilter" placeholder="Search name, address, email…" />
+                <select id="filterRating" class="filter-select" title="Minimum rating">
+                  <option value="">Rating: Any</option>
+                  <option value="3">Rating: 3.0+</option>
+                  <option value="3.5">Rating: 3.5+</option>
+                  <option value="4">Rating: 4.0+</option>
+                  <option value="4.5">Rating: 4.5+</option>
+                </select>
+                <select id="filterPhone" class="filter-select" title="Phone filter">
+                  <option value="">Phone: Any</option>
+                  <option value="yes">Phone: Exists</option>
+                  <option value="no">Phone: Missing</option>
+                </select>
+                <select id="filterWebsite" class="filter-select" title="Website filter">
+                  <option value="">Website: Any</option>
+                  <option value="yes">Website: Exists</option>
+                  <option value="no">Website: Missing</option>
+                </select>
+                <select id="filterEmail" class="filter-select" title="Email filter">
+                  <option value="">Email: Any</option>
+                  <option value="yes">Email: Exists</option>
+                  <option value="no">Email: Missing</option>
+                </select>
+                <span id="filterCount" class="filter-count"></span>
+              </div>
+              <div class="results-table-wrap">
+                <table class="results-table" id="resultsTable">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Rating</th>
+                      <th>Phone</th>
+                      <th>Website</th>
+                      <th>Email</th>
+                      <th>Address</th>
+                      <th>Maps</th>
+                    </tr>
+                  </thead>
+                  <tbody id="resultsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="tabLogs" class="hidden">
+              <div id="logPanel" class="log-panel"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div id="historyBackdrop" class="history-backdrop hidden" aria-hidden="true"></div>
+    <aside id="historyPanel" class="history-panel hidden" aria-hidden="true">
+      <div class="history-panel-header">
+        <h2>Scrape history</h2>
+        <button type="button" id="historyClose" class="history-panel-close" aria-label="Close history">×</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="empty" style="padding: 24px">
+          <div class="empty-icon">📂</div>
+          No scrapes yet
+        </div>
+      </div>
+    </aside>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

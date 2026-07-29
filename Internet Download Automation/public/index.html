@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">⬇</div>
+          <div>
+            <h1>Internet Download Dashboard</h1>
+            <p class="subtitle">
+              Search the web · Headless browser · Saved locally with full history
+            </p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" id="historyBtn" class="header-btn" title="Past downloads">
+            <svg class="header-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 2"/>
+            </svg>
+            History
+          </button>
+          <div class="route-toggle" id="routeToggle" title="Local IP vs Webshare rotating proxy">
+            <button type="button" class="route-btn active" data-mode="local">Local</button>
+            <button type="button" class="route-btn" data-mode="proxy" id="proxyRouteBtn">Proxy</button>
+          </div>
+          <span id="serverStatus" class="status-pill">Checking server…</span>
+        </div>
+      </header>
+
+      <div class="grid">
+        <aside>
+          <div class="card sidebar-card">
+            <div class="sidebar-fixed">
+              <h2>New download</h2>
+              <label for="query">Search terms</label>
+              <input
+                type="text"
+                id="query"
+                form="searchForm"
+                placeholder="e.g. MG Comet EV, sunset beach, iPhone wallpaper"
+                autocomplete="off"
+                required
+              />
+            </div>
+            <div class="sidebar-scroll">
+            <form id="searchForm">
+              <div class="form-divider"></div>
+
+              <div class="platform-section">
+                <div class="platform-header">
+                  <label>Search platforms</label>
+                  <label class="toggle-row" title="When on, searches all platforms until enough images are found">
+                    <span>Auto</span>
+                    <input type="checkbox" id="autoMode" checked />
+                    <span class="toggle-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+                <p class="platform-hint" id="platformHint">
+                  Auto mode searches Bing, DuckDuckGo, Pinterest, Unsplash, and Pixabay.
+                </p>
+                <div id="platformGrid" class="platform-grid disabled">
+                  <label class="platform-chip"><input type="checkbox" value="bing" checked disabled /> Bing</label>
+                  <label class="platform-chip"><input type="checkbox" value="duckduckgo" checked disabled /> DuckDuckGo</label>
+                  <label class="platform-chip"><input type="checkbox" value="pinterest" checked disabled /> Pinterest</label>
+                  <label class="platform-chip"><input type="checkbox" value="unsplash" checked disabled /> Unsplash</label>
+                  <label class="platform-chip"><input type="checkbox" value="pixabay" checked disabled /> Pixabay</label>
+                </div>
+              </div>
+
+              <div class="form-divider"></div>
+
+              <div class="mode-section">
+                <label>Download mode</label>
+                <div class="route-toggle download-mode-toggle" id="downloadModeToggle">
+                  <button type="button" class="route-btn" data-mode="auto">Auto</button>
+                  <button type="button" class="route-btn active" data-mode="review">Review</button>
+                </div>
+                <p class="platform-hint" id="downloadModeHint">
+                  Auto — download images immediately. Review — search first, preview URLs, then pick what to save.
+                </p>
+              </div>
+
+              <div class="mode-section" id="snapshotSection">
+                <label class="toggle-row snapshot-toggle" title="Capture scrolled page panels instead of downloading individual images">
+                  <span>Page snapshots</span>
+                  <input type="checkbox" id="snapshotMode" />
+                  <span class="toggle-track" aria-hidden="true"></span>
+                </label>
+                <p class="platform-hint" id="snapshotHint">
+                  Off — download individual images. On — scroll and capture the search results page per platform.
+                </p>
+              </div>
+
+              <div class="form-divider"></div>
+
+              <div class="slider-row" id="parallelRow">
+                <div class="slider-header">
+                  <label for="parallel">Parallel downloads</label>
+                  <span id="parallelLabel" class="count-badge">3</span>
+                </div>
+                <input
+                  type="range"
+                  id="parallel"
+                  min="1"
+                  max="5"
+                  value="3"
+                  step="1"
+                />
+                <p class="platform-hint">Images per job download at the same time (up to 5). Multiple jobs can also run together.</p>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <label for="count" id="countLabelText">Number of images</label>
+                  <span id="countLabel" class="count-badge">5</span>
+                </div>
+                <input
+                  type="range"
+                  id="count"
+                  min="1"
+                  max="100"
+                  value="5"
+                  step="1"
+                />
+                <div class="preset-btns">
+                  <button type="button" data-count="3">Top 3</button>
+                  <button type="button" data-count="5" class="active">Top 5</button>
+                  <button type="button" data-count="9">Top 9</button>
+                  <button type="button" data-count="20">Top 20</button>
+                  <button type="button" data-count="50">Top 50</button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" id="submitBtn">
+                Search &amp; preview
+              </button>
+            </form>
+            </div>
+          </div>
+        </aside>
+
+        <main class="card card-main">
+          <div id="welcomeView" class="empty">
+            <div class="empty-icon">🔍</div>
+            <p style="max-width: 420px; margin: 0 auto; line-height: 1.6">
+              Search across image platforms, preview results, and save what you need — all tracked locally with full history.
+            </p>
+            <div class="welcome-features">
+              <span class="welcome-chip">Multi-platform search</span>
+              <span class="welcome-chip">Review before download</span>
+              <span class="welcome-chip">Page snapshots</span>
+              <span class="welcome-chip">Proxy support</span>
+            </div>
+          </div>
+
+          <div id="jobView" class="hidden">
+            <div class="job-header">
+              <div class="job-header-row">
+                <div>
+                  <h3 id="jobTitle">—</h3>
+                  <p id="jobMeta">—</p>
+                </div>
+                <button type="button" id="stopBtn" class="btn-stop hidden">Stop task</button>
+              </div>
+            </div>
+
+            <div id="failureBanner" class="failure-banner hidden"></div>
+
+            <div class="stats-row">
+              <div class="stat">
+                <div class="val" id="statRequested">0</div>
+                <div class="lbl">Requested</div>
+              </div>
+              <div class="stat">
+                <div class="val" id="statFound">0</div>
+                <div class="lbl">Found</div>
+              </div>
+              <div class="stat stat-stat-success">
+                <div class="val" id="statSuccess">0</div>
+                <div class="lbl">Downloaded</div>
+              </div>
+              <div class="stat stat-stat-failed">
+                <div class="val" id="statFailed">0</div>
+                <div class="lbl">Failed</div>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="gallery">Gallery</button>
+              <button class="tab hidden" data-tab="review" id="reviewTab">Review</button>
+              <button class="tab" data-tab="logs">Activity log</button>
+            </div>
+
+            <div id="tabGallery">
+              <div id="gallery" class="gallery"></div>
+            </div>
+            <div id="tabReview" class="hidden">
+              <p class="review-intro" id="reviewIntro">Pick images to download — click the download icon on each preview.</p>
+              <div id="reviewGrid" class="review-grid"></div>
+            </div>
+            <div id="tabLogs" class="hidden">
+              <div id="logPanel" class="log-panel"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div id="historyBackdrop" class="history-backdrop hidden" aria-hidden="true"></div>
+    <aside id="historyPanel" class="history-panel hidden" aria-hidden="true">
+      <div class="history-panel-header">
+        <h2>Download history</h2>
+        <button type="button" id="historyClose" class="history-panel-close" aria-label="Close history">×</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="empty" style="padding: 24px">
+          <div class="empty-icon">📂</div>
+          No downloads yet
+        </div>
+      </div>
+    </aside>
+
+    <div id="lightbox" class="lightbox hidden" aria-hidden="true">
+      <button type="button" id="lightboxClose" class="lightbox-close" aria-label="Close">×</button>
+      <div class="lightbox-inner">
+        <img id="lightboxImg" alt="" />
+        <div class="lightbox-meta">
+          <span id="lightboxPlatform" class="platform-pill"></span>
+          <span id="lightboxFilename" class="lightbox-filename"></span>
+          <a id="lightboxOpen" class="lightbox-open" href="#" target="_blank" rel="noopener">Open file</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
